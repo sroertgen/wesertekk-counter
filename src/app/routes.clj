@@ -3,6 +3,13 @@
             [clojure.java.io :as io]))
 
 (def counter-atom (atom 0))
+(def went-atom (atom 0))
+
+(defn current [] (- @counter-atom @went-atom))
+
+(defn resp []
+  (json/generate-string  {:counter (current)
+                          :total @counter-atom}))
 
 (defn home [request]
   {:status 200
@@ -12,25 +19,26 @@
 (defn counter [request]
   {:status 200
    :headers {"Content-Type" "application/json"}
-   :body (json/generate-string  {:counter @counter-atom})})
+   :body ( resp )})
 
 (defn increment [request]
   (swap! counter-atom inc)
   {:status 200
    :headers {"Content-Type" "application/json"}
-   :body (json/generate-string  {:counter @counter-atom})})
+   :body (resp)})
 
 (defn decrement [request]
-  (swap! counter-atom dec)
+  (swap! went-atom inc)
   {:status 200
    :headers {"Content-Type" "application/json"}
-   :body (json/generate-string  {:counter @counter-atom})})
+   :body (resp)})
 
 (defn reset [request]
   (reset! counter-atom 0)
+  (reset! went-atom 0)
   {:status 200
    :headers {"Content-Type" "application/json"}
-   :body (json/generate-string  {:counter @counter-atom})})
+   :body (resp)})
 
 (defn routes [config]
   #{["/" :get home :route-name :home]

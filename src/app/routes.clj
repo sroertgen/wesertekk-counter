@@ -1,12 +1,13 @@
 (ns app.routes
-  (:require [cheshire.core :as json]))
+  (:require [cheshire.core :as json]
+            [clojure.java.io :as io]))
 
 (def counter-atom (atom 0))
 
 (defn home [request]
   {:status 200
    :headers {"Content-Type" "text/html"}
-   :body (slurp "resources/public/index.html")})
+   :body (slurp (io/resource "public/index.html"))})
 
 (defn counter [request]
   {:status 200

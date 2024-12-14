@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shared Counter</title>
+</head>
+<body>
+  <h1>Shared Counter</h1>
+  <p>Current Count: <span id="counter">0</span></p>
+  <button id="increment">Increment</button>
+
+  <script>
+    const counterDisplay = document.getElementById('counter');
+    const incrementButton = document.getElementById('increment');
+
+    // Fetch the current counter value
+    async function fetchCounter() {
+      const response = await fetch('/counter');
+      const data = await response.json();
+      counterDisplay.textContent = data.count;
+    }
+
+    // Increment the counter
+    async function incrementCounter() {
+      const response = await fetch('/increment', { method: 'POST' });
+      const data = await response.json();
+      console.log("data ", data)
+      counterDisplay.textContent = data.counter;
+    }
+
+    // Event listener for increment button
+    incrementButton.addEventListener('click', incrementCounter);
+
+    // Initial fetch of the counter
+    fetchCounter();
+  </script>
+</body>
+</html>
+

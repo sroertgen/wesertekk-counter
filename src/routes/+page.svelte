@@ -8,21 +8,7 @@
 	/** @type {number | null} */
 	let submitTimeout = null;
 
-	function handleSubmit() {
-		if (isSubmitting) return false;
 
-		isSubmitting = true;
-		if (submitTimeout) {
-			clearTimeout(submitTimeout);
-		}
-
-		// Reset after 500ms to prevent accidental double-clicks
-		submitTimeout = setTimeout(() => {
-			isSubmitting = false;
-		}, 500);
-
-		return true;
-	}
 </script>
 
 
@@ -55,8 +41,8 @@
 				>
 					<li>
 						<button onclick={() => {
-							const modal = document.getElementById('my_modal_1');
-							if (modal && 'showModal' in modal) {
+							const modal = /** @type {HTMLDialogElement} */ (document.getElementById('my_modal_1'));
+							if (modal) {
 								modal.showModal();
 							}
 						}}>Reset</button>
@@ -71,20 +57,85 @@
 		<h1 class="mt-4 text-2xl">Aktuell: {data.onSite}</h1>
 
 		<div class="mt-auto mb-10 flex flex-col items-center gap-4">
-			<form class="w-full" method="POST" action="?/increment" use:enhance>
-				<button class="btn min-h-36 w-full touch-none text-6xl btn-success" type="submit"
+			
+			<form
+				class="w-full"
+				method="POST"
+				action="?/increment"
+				use:enhance={() => {
+					if (isSubmitting) return;
+
+					isSubmitting = true;
+					if (submitTimeout) {
+						clearTimeout(submitTimeout);
+					}
+
+					// Reset after 500ms to prevent accidental double-clicks
+					submitTimeout = setTimeout(() => {
+						isSubmitting = false;
+					}, 500);
+
+					return async ({ update }) => {
+						await update();
+					};
+				}}
+			>
+			
+				<button disabled={isSubmitting} class="btn min-h-36 w-full touch-none text-6xl btn-success" type="submit"
 					>Neuer Besucher</button
 				>
 			</form>
 
-			<form class="w-full" method="POST" action="?/reentry" use:enhance>
-				<button class="btn min-h-36 w-full touch-none text-6xl btn-info" type="submit"
+			<form
+				class="w-full"
+				method="POST"
+				action="?/reentry"
+				use:enhance={() => {
+					if (isSubmitting) return;
+
+					isSubmitting = true;
+					if (submitTimeout) {
+						clearTimeout(submitTimeout);
+					}
+
+					// Reset after 500ms to prevent accidental double-clicks
+					submitTimeout = setTimeout(() => {
+						isSubmitting = false;
+					}, 500);
+
+					return async ({ update }) => {
+						await update();
+					};
+				}}
+			>
+				<button disabled={isSubmitting} class="btn min-h-36 w-full touch-none text-6xl btn-info" type="submit"
 					>Wiedereinlass</button
 				>
 			</form>
 
-			<form class="w-full" method="POST" action="?/decrement" use:enhance>
-				<button class="btn min-h-36 w-full touch-none text-6xl btn-warning" type="submit"
+			<form
+				class="w-full"
+				method="POST"
+				action="?/decrement"
+				use:enhance={() => {
+					if (isSubmitting) return;
+
+					isSubmitting = true;
+					if (submitTimeout) {
+						clearTimeout(submitTimeout);
+					}
+
+					// Reset after 500ms to prevent accidental double-clicks
+					submitTimeout = setTimeout(() => {
+						isSubmitting = false;
+					}, 500);
+
+					return async ({ update }) => {
+						await update();
+					};
+				}}
+			>
+				<button disabled={isSubmitting} class="btn min-h-36 w-full touch-none text-6xl btn-warning" type="submit"
 					>Geht</button
 				>
 			</form>
@@ -114,13 +165,13 @@
 		<div class="modal-action">
 			<form class="w-full" method="POST" action="?/reset" use:enhance>
 				<button
-					onclick={() => document.getElementById('my_modal_1').close()}
+					onclick={() => /** @type {HTMLDialogElement} */ (document.getElementById('my_modal_1')).close()}
 					disabled={password !== 'wesertekken'}
 					class="btn btn-error"
 					type="submit">Zurücksetzen</button
 				>
 			</form>
-			<button class="btn" onclick={() => document.getElementById('my_modal_1').close()}
+			<button class="btn" onclick={() => /** @type {HTMLDialogElement} */ (document.getElementById('my_modal_1')).close()}
 				>Close</button
 			>
 		</div>

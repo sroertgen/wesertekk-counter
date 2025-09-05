@@ -54,7 +54,7 @@
 
 	<div class="flex-1 flex flex-col items-center">
 		<h1 class="text-6xl">Gesamt: {data.total}</h1>
-		<h1 class="mt-4 text-2xl">Aktuell: {data.onSite}</h1>
+		<h1 class="mt-4 text-2xl">Anwesend: {data.onSite}</h1>
 
 		<div class="mt-auto mb-10 flex flex-col items-center gap-4">
 			

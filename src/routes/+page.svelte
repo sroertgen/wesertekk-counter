@@ -4,6 +4,25 @@
 	let { data, form } = $props();
 
 	let password = $state('');
+	let isSubmitting = $state(false);
+	/** @type {number | null} */
+	let submitTimeout = null;
+
+	function handleSubmit() {
+		if (isSubmitting) return false;
+
+		isSubmitting = true;
+		if (submitTimeout) {
+			clearTimeout(submitTimeout);
+		}
+
+		// Reset after 500ms to prevent accidental double-clicks
+		submitTimeout = setTimeout(() => {
+			isSubmitting = false;
+		}, 500);
+
+		return true;
+	}
 </script>
 
 
@@ -35,7 +54,12 @@
 					class="dropdown-content menu z-[1] mt-4 w-52 rounded-box bg-base-100 p-2 shadow"
 				>
 					<li>
-						<button onclick={() => document.getElementById('my_modal_1').showModal()}>Reset</button>
+						<button onclick={() => {
+							const modal = document.getElementById('my_modal_1');
+							if (modal && 'showModal' in modal) {
+								modal.showModal();
+							}
+						}}>Reset</button>
 					</li>
 				</ul>
 			</div>

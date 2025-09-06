@@ -1,55 +1,18 @@
-# Build stage
+# Use a Node.js Alpine image for the builder stage
 FROM node:22-alpine AS builder
-
-# Set working directory
 WORKDIR /app
-
-# Copy package files
 COPY package*.json ./
-
-# Install dependencies
 RUN npm ci
-
-# Copy source code
 COPY . .
-
-# Build the application
 RUN npm run build
+RUN npm prune --production
 
-# Production stage
-FROM node:22-alpine AS production
-
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
-
-# Create app user for security
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S svelte -u 1001
-
-# Set working directory
+# Use another Node.js Alpine image for the final stage
+FROM node:22-alpine
 WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
-
-# Copy built application from builder stage
-COPY --from=builder /app/build ./build
-COPY --from=builder /app/node_modules ./node_modules
-
-# Change ownership to app user
-RUN chown -R svelte:nodejs /app
-USER svelte
-
-# Expose port
+COPY --from=builder /app/build build/
+COPY --from=builder /app/node_modules node_modules/
+COPY package.json .
 EXPOSE 3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
-
-# Start the application
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "build"]
+ENV NODE_ENV=production
+CMD [ "node", "build" ]

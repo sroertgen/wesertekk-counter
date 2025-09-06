@@ -4,7 +4,9 @@ import adapter from '@sveltejs/adapter-node';
 const config = {
 	kit: {
 		adapter: adapter({
-			// see below for options that can be set here
+			precompress: true,
+			port: 3000,
+			host: '0.0.0.0'
 		})
 	}
 };

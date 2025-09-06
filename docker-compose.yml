@@ -5,13 +5,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
     environment:
       - NODE_ENV=production
-      - ORIGIN=http://localhost:3000
+      - ORIGIN=https://wtcounter.wesertekk.de
       - HOST=0.0.0.0
       - PORT=3000
+      - PROTOCOL_HEADER=x-forwarded-proto
+      - HOST_HEADER=x-forwarded-host
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
@@ -19,9 +19,17 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_web"
+      - "traefik.http.routers.wtcounter.entrypoints=web,websecure"
+      - "traefik.http.routers.wtcounter.rule=Host(`wtcounter.wesertekk.de`)"
+      - "traefik.http.routers.wtcounter.tls=true"
+      - "traefik.http.routers.wtcounter.tls.certresolver=production"
+      - "traefik.http.services.wtcounter.loadbalancer.server.port=3000"
     networks:
-      - app-network
+      - traefik_web
 
 networks:
-  app-network:
-    driver: bridge
+  traefik_web:
+    external: true
